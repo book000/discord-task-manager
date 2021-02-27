@@ -26,7 +26,7 @@ full_name = api.state["user"]["full_name"]
 print("Todoist Login complete: {}".format(full_name))
 
 g = Github(GitHubUser, GitHubPass)
-print("GitHub Login complete: {}".format(g.get_user().name))
+print("GitHub Login complete")
 
 
 def is_repository_exists(repo: str):
