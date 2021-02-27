@@ -16,8 +16,7 @@ with open("config.json", "r") as f:
     ChannelId: int = int(config["discord_channel_id"])
     OwnerUserId: int = int(config["owner_user_id"])
     TodoistAPIKEY = config["todoist_apikey"]
-    GitHubUser = config["github_username"]
-    GitHubPass = config["github_password"]
+    GitHubAPIKEY = config["github_apikey"]
 
 api = todoist.TodoistAPI(TodoistAPIKEY)
 api.sync()
@@ -25,7 +24,7 @@ api.sync()
 full_name = api.state["user"]["full_name"]
 print("Todoist Login complete: {}".format(full_name))
 
-g = Github(GitHubUser, GitHubPass)
+g = Github(GitHubAPIKEY)
 print("GitHub Login complete: {}".format(g.get_user().name))
 
 
@@ -123,25 +122,25 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if payload.emoji.name == "📋" and payload.user_id == OwnerUserId:
         content: str = message.content
         contents: list[str] = content.split(" ")
-        issue = list(filter(lambda s: s.startswith("repo:"), contents))
+        repo = list(map(lambda s: s.split(":")[1], filter(lambda s: s.startswith("repo:"), contents)))
         contents = list(filter(lambda s: not s.startswith("repo:"), contents))
 
         issue_name = "jaoafa/jao-Minecraft-Server"
-        if len(issue) >= 1 and "/" not in issue[0] and is_repository_exists("jaoafa/{}".format(issue[0])):
-            issue_name = "jaoafa/{}".format(issue[0])
-        elif len(issue) >= 1 and "/" not in issue[0] and is_repository_exists("book000/{}".format(issue[0])):
-            issue_name = "book000/{}".format(issue[0])
-        elif len(issue) >= 1 and "/" not in issue[0]:
+        if len(repo) >= 1 and "/" not in repo[0] and is_repository_exists("jaoafa/{}".format(repo[0])):
+            issue_name = "jaoafa/{}".format(repo[0])
+        elif len(repo) >= 1 and "/" not in repo[0] and is_repository_exists("book000/{}".format(repo[0])):
+            issue_name = "book000/{}".format(repo[0])
+        elif len(repo) >= 1 and "/" not in repo[0]:
             await message.reply(
-                "リポジトリがjaoafaオーガナイゼーション・book000ユーザーに見つかりませんでした。({})".format(issue[0]),
+                "リポジトリがjaoafaオーガナイゼーション・book000ユーザーに見つかりませんでした。({})".format(repo[0]),
                 delete_after=10
             )
             return
-        if len(issue) >= 1:
-            if is_repository_exists(issue[0]):
-                issue_name = issue[0]
+        if len(repo) >= 1:
+            if is_repository_exists(repo[0]):
+                issue_name = repo[0]
             else:
-                await message.reply("リポジトリが見つかりませんでした。({})".format(issue[0]), delete_after=10)
+                await message.reply("リポジトリが見つかりませんでした。({})".format(repo[0]), delete_after=10)
                 return
 
         title: str = content.split("\n")[0]
