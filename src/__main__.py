@@ -16,7 +16,8 @@ with open("config.json", "r") as f:
     ChannelId: int = int(config["discord_channel_id"])
     OwnerUserId: int = int(config["owner_user_id"])
     TodoistAPIKEY = config["todoist_apikey"]
-    GitHubAPIKEY = config["github_apikey"]
+    GitHubUser = config["github_username"]
+    GitHubPass = config["github_password"]
 
 api = todoist.TodoistAPI(TodoistAPIKEY)
 api.sync()
@@ -24,7 +25,7 @@ api.sync()
 full_name = api.state["user"]["full_name"]
 print("Todoist Login complete: {}".format(full_name))
 
-g = Github(GitHubAPIKEY)
+g = Github(GitHubUser, GitHubPass)
 print("GitHub Login complete: {}".format(g.get_user().name))
 
 
