@@ -35,10 +35,11 @@ def is_repository_exists(repo: str):
     :param repo: リポジトリ名 e.g. jaoafa/jaoafa/jao-Minecraft-Server
     :return: boolean
     """
+    print("is_repository_exists", repo)
     try:
-        g.get_repo(repo, True)
+        g.get_repo(repo)
         return True
-    except UnknownObjectException:
+    except UnknownObjectException as e:
         return False
 
 
@@ -136,7 +137,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                 delete_after=10
             )
             return
-        if len(repo) >= 1:
+        elif len(repo) >= 1:
             if is_repository_exists(repo[0]):
                 issue_name = repo[0]
             else:
@@ -145,7 +146,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
         title: str = content.split("\n")[0]
         try:
-            g.get_repo(issue_name, True).create_issue(
+            g.get_repo(issue_name).create_issue(
                 title,
                 "## Contents\n"
                 "```\n"
@@ -160,8 +161,8 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
             await message.add_reaction("📋")
         except GithubException as e:
-            await message.reply("リポジトリにIssueを投稿できませんでした。", delete_after=10)
             print(e)
+            await message.reply("リポジトリにIssueを投稿できませんでした。", delete_after=10)
 
 if __name__ == "__main__":
     client.run(TOKEN)
