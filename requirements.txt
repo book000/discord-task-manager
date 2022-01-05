@@ -7,7 +7,7 @@ Deprecated==1.2.11
 discord==1.0.1
 discord.py==1.6.0
 idna==2.10
-multidict==5.1.0
+multidict==5.2.0
 PyGithub==1.54.1
 PyJWT==1.7.1
 requests==2.27.1
